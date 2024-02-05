@@ -86,12 +86,15 @@ assert V(six.__version__) >= V('1.5'), "Upgrade six!" + _SEE_URL
 assert V(bs4.__version__) >= V('4.1'), "Upgrade bs4!" + _SEE_URL
 
 
-def get_session():
+def get_session(args, use_proxy=False):
     """
     Create a session with TLS v1.2 certificate.
     """
 
     session = requests.Session()
+    if use_proxy:
+        proxies = {'http': args.proxy, 'https':args.proxy}
+        session.proxies.update(proxies)
     session.mount('https://', TLSAdapter())
 
     return session
@@ -104,7 +107,7 @@ def list_courses(args):
     @param args: Command-line arguments.
     @type args: namedtuple
     """
-    session = get_session()
+    session = get_session(args, bool(args.proxy))
     login(session, args.username, args.password)
     extractor = CourseraExtractor(session)
     courses = extractor.list_courses()
@@ -232,7 +235,7 @@ def main():
         list_courses(args)
         return
 
-    session = get_session()
+    session = get_session(args, bool(args.proxy))
     if args.cookies_cauth:
         session.cookies.set('CAUTH', args.cookies_cauth)
     else:

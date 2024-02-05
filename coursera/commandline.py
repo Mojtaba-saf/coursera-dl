@@ -121,6 +121,13 @@ def parse_args(args=None):
 
     )
 
+    group_basic.add_argument(
+        '--proxy',
+        dest='proxy',
+        action='store',
+        default='',
+        help='http proxy')
+
     # Selection of material to download
     group_material = parser.add_argument_group(
         'Selection of material to download')
